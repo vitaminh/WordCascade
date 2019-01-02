@@ -9,7 +9,7 @@ module.exports = {
   },
   devtool: 'source-maps',
   devServer: {
-    contentBase: './public'
+    contentBase: [path.join(__dirname, 'public'), __dirname]
   },
   module: {
     rules: [
@@ -28,11 +28,5 @@ module.exports = {
         }
       }
     ]
-  },
-  resolve: {
-    extensions: ['.mjs', '.js', '.jsx', '.wasm', '.json']
-  },
-  externals: {
-    fs: "require('fs')"
   }
 };
