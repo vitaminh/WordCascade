@@ -11,7 +11,7 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      wordlist: []
+      wordlist: [],
     };
   }
 
@@ -21,7 +21,7 @@ export default class Main extends React.Component {
     this.setState(prevState => {
       return {
         ...prevState,
-        wordlist
+        wordlist,
       };
     });
   }
@@ -29,18 +29,24 @@ export default class Main extends React.Component {
   render() {
     const myCanvas = document.getElementById('paper-canvas');
     paper.setup(myCanvas);
-    const width = paper.view.size.width;
-    const height = paper.view.size.height;
+    let width = paper.view.size.width;
+    let height = paper.view.size.height;
     const text = new paper.PointText(new Point(width / 2, height / 2));
     text.justification = 'center';
-    text.fontSize = '1.6em';
+    text.fontSize = '1.2em';
     const randomIndex = getRandomInt(0, this.state.wordlist.length);
     text.content = this.state.wordlist[randomIndex];
 
     // render
     paper.view.draw();
     paper.view.onFrame = function(event) {
-      text.rotate(.5);
+      text.rotate(0.5);
+    };
+    paper.view.onResize = () => {
+      // const newRandomIndex = getRandomInt(0, this.state.wordlist.length);
+      // text.content = this.state.wordlist[newRandomIndex];
+      text.point.x = paper.view.size.width / 2;
+      text.point.y = paper.view.size.height / 2;
     };
     return (
       <div>

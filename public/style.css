@@ -1,6 +1,14 @@
 #paper-canvas {
-  width: 100vw;
-  height: 100vh;
+  width: 95vw;
+  height: 95vh;
+  background-color: cornflowerblue;
+  border-width: 1em;
+  border-color: black;
+}
+
+canvas[resize] {
+  width: 95vw;
+  height: 95vh;
 }
 
 body {
