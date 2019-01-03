@@ -1,16 +1,13 @@
 const path = require('path');
 
 module.exports = {
-  entry: './public/index.js',
+  entry: ['babel-polyfill', './client/index.js'],
   mode: 'development',
   output: {
     path: path.join(__dirname, 'public'),
     filename: 'bundle.js'
   },
   devtool: 'source-maps',
-  devServer: {
-    contentBase: [path.join(__dirname, 'public'), __dirname]
-  },
   module: {
     rules: [
       {
@@ -28,5 +25,8 @@ module.exports = {
         }
       }
     ]
+  },
+  resolve: {
+    extensions: ['.wasm', '.mjs', '.js', '.json', '.jsx']
   }
 };
