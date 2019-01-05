@@ -9,21 +9,33 @@ const getRandomInt = (min, max) => {
 };
 
 class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.makeNewRandomTextItem = this.makeNewRandomTextItem.bind(this);
+  }
   componentDidMount() {
     this.props.fetchInitialWordlist();
   }
 
+  makeNewRandomTextItem() {
+    const text = new this.props.scope.PointText(
+      new Point(this.props.scope.view.center)
+    );
+    text.justification = 'center';
+    let randomIndex = getRandomInt(0, this.props.wordlist.length);
+    text.content = this.props.wordlist[randomIndex];
+    text.fontWeight = 'bold';
+    text.fontFamily = 'Helvetica';
+    return text;
+  }
+
   render() {
-    const wordlist = this.props.wordlist;
+    if (this.props.wordlist.length === 0) return <h1>Loading...</h1>;
     const scope = this.props.scope;
     const myCanvas = document.getElementById('paper-canvas');
     scope.setup(myCanvas);
-    let text = new scope.PointText(new Point(scope.view.center));
-    text.justification = 'center';
-    let randomIndex = getRandomInt(0, wordlist.length);
-    text.content = wordlist[randomIndex];
-    console.log(text);
-    console.log(scope);
+    let text = this.makeNewRandomTextItem();
+    const makeNewItemHelper = this.makeNewRandomTextItem;
 
     let destination = Point.random().multiply(scope.view.size);
     scope.view.onFrame = function(event) {
@@ -49,10 +61,7 @@ class Main extends React.Component {
       text.scale(1.007);
       text.opacity -= 0.005;
       if (text.opacity <= 0.005) {
-        text = new scope.PointText(new Point(scope.view.center));
-        randomIndex = getRandomInt(0, wordlist.length);
-        text.opacity = 1;
-        text.content = wordlist[randomIndex];
+        text = makeNewItemHelper();
         destination = Point.random().multiply(scope.view.size);
       }
     };
@@ -64,11 +73,7 @@ class Main extends React.Component {
     // render
     scope.view.draw();
 
-    return (
-      <div>
-        <Canvas />
-      </div>
-    );
+    return <div />;
   }
 }
 
