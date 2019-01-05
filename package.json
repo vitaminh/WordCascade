@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run start-server & npm run build-watch",
+    "start-dev": "npm run start-server & npm run build-watch",
     "start-server": "nodemon server",
     "build-watch": "webpack -w"
   },
@@ -19,7 +19,11 @@
     "paper": "^0.12.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "redux": "^4.0.1",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
     "wordlist-english": "^1.2.1"
   },
   "devDependencies": {

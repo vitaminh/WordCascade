@@ -1,42 +1,32 @@
 import React from 'react';
-import axios from 'axios';
 import Canvas from './Canvas';
 import paper, { Point } from 'paper';
+import { connect } from 'react-redux';
+import { fetchWordlist } from '../reducers/wordlist';
 
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 };
 
-export default class Main extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      wordlist: []
-    };
-  }
-
-  async componentDidMount() {
-    const response = await axios.get('/api/wordlist');
-    const wordlist = response.data;
-    this.setState(prevState => {
-      return {
-        ...prevState,
-        wordlist
-      };
-    });
+class Main extends React.Component {
+  componentDidMount() {
+    this.props.fetchInitialWordlist();
   }
 
   render() {
+    const wordlist = this.props.wordlist;
+    const scope = this.props.scope;
     const myCanvas = document.getElementById('paper-canvas');
-    paper.setup(myCanvas);
-    let text = new paper.PointText(new Point(paper.view.center));
+    scope.setup(myCanvas);
+    let text = new scope.PointText(new Point(scope.view.center));
     text.justification = 'center';
-    let randomIndex = getRandomInt(0, this.state.wordlist.length);
-    text.content = this.state.wordlist[randomIndex];
-    const wordlist = this.state.wordlist;
+    let randomIndex = getRandomInt(0, wordlist.length);
+    text.content = wordlist[randomIndex];
+    console.log(text);
+    console.log(scope);
 
-    let destination = Point.random().multiply(paper.view.size);
-    paper.view.onFrame = function(event) {
+    let destination = Point.random().multiply(scope.view.size);
+    scope.view.onFrame = function(event) {
       // Each frame, move the path 1/30th of the difference in position
       // between it and the destination.
 
@@ -54,16 +44,16 @@ export default class Main extends React.Component {
       // than 5, we define a new random point in the view to move the
       // path to:
       if (vector.length < 5) {
-        destination = Point.random().multiply(paper.view.size);
+        destination = Point.random().multiply(scope.view.size);
       }
       text.scale(1.007);
       text.opacity -= 0.005;
       if (text.opacity <= 0.005) {
-        text = new paper.PointText(new Point(paper.view.center));
+        text = new scope.PointText(new Point(scope.view.center));
         randomIndex = getRandomInt(0, wordlist.length);
         text.opacity = 1;
         text.content = wordlist[randomIndex];
-        destination = Point.random().multiply(paper.view.size);
+        destination = Point.random().multiply(scope.view.size);
       }
     };
     // paper.view.onResize = () => {
@@ -72,7 +62,7 @@ export default class Main extends React.Component {
     // };
 
     // render
-    paper.view.draw();
+    scope.view.draw();
 
     return (
       <div>
@@ -81,3 +71,21 @@ export default class Main extends React.Component {
     );
   }
 }
+
+const mapState = state => {
+  return {
+    wordlist: state.wordlist,
+    scope: state.scope
+  };
+};
+
+const mapDispatch = dispatch => {
+  return {
+    fetchInitialWordlist: () => dispatch(fetchWordlist())
+  };
+};
+
+export default connect(
+  mapState,
+  mapDispatch
+)(Main);
