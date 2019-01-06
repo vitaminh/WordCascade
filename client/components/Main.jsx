@@ -3,6 +3,11 @@ import Canvas from './Canvas';
 
 export default class Main extends React.Component {
   render() {
-    return <Canvas />;
+    return (
+      <div>
+        <canvas id="paper-canvas" data-paper-resize="true" />
+        <Canvas />
+      </div>
+    );
   }
 }

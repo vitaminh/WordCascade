@@ -1,5 +1,5 @@
 import React from 'react';
-import { Point } from 'paper';
+import { Point, Shape, Color } from 'paper';
 
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
@@ -11,24 +11,15 @@ export default class CanvasPresentational extends React.Component {
     this.props.scope.setup(document.getElementById('paper-canvas'));
   }
 
-  makeNewRandomTextItem() {
-    const text = new this.props.scope.PointText(
-      new Point(this.props.scope.view.center)
-    );
-    text.justification = 'center';
-    let randomIndex = getRandomInt(0, this.props.wordlist.length);
-    text.content = this.props.wordlist[randomIndex];
-    text.fontWeight = 'bold';
-    text.fontFamily = 'Helvetica';
-    return text;
-  }
-
-  render() {
-    if (this.props.wordlist.length === 0) {
-      return <canvas id="paper-canvas" data-paper-resize="true" />;
-    }
+  initializeCanvas() {
     const scope = this.props.scope;
-    let text = this.makeNewRandomTextItem();
+    const wordlist = this.props.wordlist;
+    // const circle = new Shape.Circle({
+    //   center: new Point(scope.view.center),
+    //   radius: 250,
+    //   fillColor: new Color(1, 1, 0)
+    // });
+    let text = this.makeNewRandomTextItem(scope, wordlist);
     const makeNewItemHelper = this.makeNewRandomTextItem;
 
     let destination = Point.random().multiply(scope.view.size);
@@ -43,7 +34,7 @@ export default class CanvasPresentational extends React.Component {
       // We add 1/30th of the vector to the position property
       // of the text item, to move it in the direction of the
       // destination point:
-      const dividedVector = vector.divide(175);
+      const dividedVector = vector.divide(200);
       text.position = text.position.add(dividedVector);
 
       // If the distance between the path and the destination is less
@@ -53,19 +44,36 @@ export default class CanvasPresentational extends React.Component {
         destination = Point.random().multiply(scope.view.size);
       }
       text.scale(1.013);
-      text.opacity -= 0.005;
+      text.opacity -= 0.0045;
       if (text.opacity <= 0.005) {
-        text = makeNewItemHelper();
+        text = makeNewItemHelper(scope, wordlist);
         destination = Point.random().multiply(scope.view.size);
       }
     };
-    // paper.view.onResize = () => {
-    //   text.point.x = paper.view.size.width / 2;
-    //   text.point.y = paper.view.size.height / 2;
-    // };
+    scope.view.onResize = () => {
+      scope.view.update();
+    };
+  }
 
-    // render
-    scope.view.draw();
-    return <canvas id="paper-canvas" data-paper-resize="true" />;
+  // pass function scope and wordlist so it will have access as this will be called in scope.view.onFrame
+  makeNewRandomTextItem(scope, wordlist) {
+    return new scope.PointText({
+      point: scope.view.center,
+      justification: 'center',
+      fontWeight: 'bold',
+      fontFamily: 'Helvetica',
+      content: wordlist[getRandomInt(0, wordlist.length)]
+    });
+  }
+
+  render() {
+    if (this.props.wordlist.length === 0) {
+      return <div />;
+    } else {
+      // render
+      this.initializeCanvas();
+      this.props.scope.view.draw();
+      return <div />;
+    }
   }
 }
